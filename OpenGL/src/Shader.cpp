@@ -65,8 +65,8 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 		GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
 		char* message = (char*)alloca(length * sizeof(char));
 		GLCall(glGetShaderInfoLog(id, length, &length, message));
-		std::cout << "Failed to compile" <<
-			(type == GL_VERTEX_SHADER ? "vertex" : "fragment") << "shader!" << std::endl;
+		std::cout << "Failed to compile " <<
+			(type == GL_VERTEX_SHADER ? "vertex " : "fragment ") << "shader!" << std::endl;
 		std::cout << message << std::endl;
 		GLCall(glDeleteShader(id));
 
@@ -103,6 +103,11 @@ void Shader::Bind() const
 void Shader::Unbind() const
 {
 	GLCall(glUseProgram(0));
+}
+
+void Shader::SetUniform1i(const std::string& name, int value)
+{
+	GLCall(glUniform1i(GetUniformLocation(name), value));
 }
 
 void Shader::SetUniform1f(const std::string& name, float value)
