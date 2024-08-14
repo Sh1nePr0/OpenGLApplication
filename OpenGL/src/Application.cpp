@@ -77,19 +77,16 @@ int main(void)
 
         IndexBuffer ibo(indices, 6);
 
-        //orthographic matrix
+        //orthographic matrix(projection matrix) 
+        //projection = variable that store values of position of our texture in (-1;1) space left-bottom = -1, right-top = 1
         glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
         //matrix that represent position of our camera
         glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
-        //matrix that move out model on screen
+        //matrix that represent moving of our model on screen
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));
 
         //model view projection matrix
         glm::mat4 mvp = proj * view * model;
-
-        //projection = variable that store values of position of our texture in (-1;1) space left-bottom = -1, right-top = 1
-        //glm::vec4 result = proj * vertexPos;
-
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
