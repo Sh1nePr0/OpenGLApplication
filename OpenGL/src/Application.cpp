@@ -15,6 +15,8 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 int main(void)
 {
@@ -29,7 +31,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -49,10 +51,10 @@ int main(void)
 
     {
         float positions[] = {
-            -0.5f, -0.5f, 0.0f, 0.0f,// 0
-            0.5f,  -0.5f, 1.0f, 0.0f,// 1
-            0.5f,  0.5f,  1.0f, 1.0f,// 2
-            -0.5f, 0.5f,  0.0f, 1.0f// 3
+			 100.0f, 100.0f, 0.0f, 0.0f,// 0
+			 200.0f, 100.0f, 1.0f, 0.0f,// 1
+			 200.0f,  200.0f,  1.0f, 1.0f,// 2
+			 100.0f,  200.0f,  0.0f, 1.0f // 3
         };
 
         unsigned int indices[] = {
@@ -75,10 +77,24 @@ int main(void)
 
         IndexBuffer ibo(indices, 6);
 
+        //orthographic matrix
+        glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+        //matrix that represent position of our camera
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
+        //matrix that move out model on screen
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));
+
+        //model view projection matrix
+        glm::mat4 mvp = proj * view * model;
+
+        //projection = variable that store values of position of our texture in (-1;1) space left-bottom = -1, right-top = 1
+        //glm::vec4 result = proj * vertexPos;
+
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
+        shader.SetUniformMat4f("u_MVP", mvp);
 
         Texture texture("res/textures/WitcherLogo.png");
         texture.Bind();
