@@ -18,6 +18,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -82,16 +86,10 @@ int main(void)
         glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
         //matrix that represent position of our camera
         glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
-        //matrix that represent moving of our model on screen
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));
-
-        //model view projection matrix
-        glm::mat4 mvp = proj * view * model;
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
-        shader.SetUniformMat4f("u_MVP", mvp);
 
         Texture texture("res/textures/WitcherLogo.png");
         texture.Bind();
@@ -104,6 +102,15 @@ int main(void)
 
         Renderer renderer;
 
+        const char* glsl_version = "#version 330";
+
+        ImGui::CreateContext();
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplOpenGL3_Init(glsl_version);
+        ImGui::StyleColorsDark();
+     
+        glm::vec3 translation(200.0f, 200.0f, 0.0f);
+
         float r = 0.0f;
         float increment = 0.05f;
         /* Loop until the user closes the window */
@@ -112,9 +119,18 @@ int main(void)
             /* Render here */
             renderer.Clear();
 
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            //matrix that represent moving of our model on screen
+			glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+            //model view projection matrix
+			glm::mat4 mvp = proj * view * model;
 
             shader.Bind();
             shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
+            shader.SetUniformMat4f("u_MVP", mvp);
 
             renderer.Draw(vao, ibo, shader);
 
@@ -125,6 +141,15 @@ int main(void)
 
             r += increment;
 
+
+            {
+                ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
+                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            }
+
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
             /* Swap front and back buffers */
             glfwSwapBuffers(window);
 
@@ -133,6 +158,10 @@ int main(void)
         }
 
     }
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
     glfwTerminate();
     return 0;
