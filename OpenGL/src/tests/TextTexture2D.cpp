@@ -49,7 +49,8 @@ namespace test {
 
         m_Shader = std::make_unique<Shader>("res/shaders/Basic.shader");
         m_Shader->Bind();
-        m_Shader->SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
+        glm::vec4 uniformVec(0.2f, 0.3f, 0.8f, 1.0f);
+        m_Shader->SetUniform4f("u_Color", uniformVec);
 
         m_Texture = std::make_unique<Texture>("res/textures/WitcherLogo.png");
         m_Texture->Bind();
