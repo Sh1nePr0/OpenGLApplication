@@ -69,7 +69,7 @@
     <ClCompile Include="src\tests\Test.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\tests\TextTexture2D.cpp">
+    <ClCompile Include="src\tests\TestTexture2D.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
